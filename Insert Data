@@ -1,0 +1,56 @@
+-- Use the Database
+USE TV_Series;
+
+-- Method 1: Without column list
+-- Insert into ACTORS table
+INSERT INTO ACTORS VALUES
+(1, 'JOHN', 'SMITH', 'M', 'john.smith@email.com', 'MANCHESTER', 'UK', STR_TO_DATE('01-JAN-1990', '%d-%b-%Y')),
+(2, 'JANE', 'DOE', 'F', 'jane.doe@email.com', 'LONDON', 'UK', STR_TO_DATE('15-JUN-1985', '%d-%b-%Y')),
+(3, 'MICHAEL', 'JONES', 'M', 'michael.jones@email.com', 'NEW YORK', 'USA', STR_TO_DATE('20-FEB-1988', '%d-%b-%Y')),
+(4, 'SOPHIE', 'WILLIAMS', 'F', 'sophie.williams@email.com', 'PARIS', 'FRANCE', STR_TO_DATE('10-NOV-1995', '%d-%b-%Y')),
+(5, 'DANIEL', 'BROWN', 'M', 'daniel.brown@email.com', 'BERLIN', 'GERMANY', STR_TO_DATE('05-SEP-1983', '%d-%b-%Y'));
+
+-- Insert into SERIES table
+INSERT INTO SERIES VALUES
+(1, 'Breaking Bad', 'High school chemistry teacher turned methamphetamine producer', 2008),
+(2, 'Game of Thrones', 'Epic fantasy television series', 2011),
+(3, 'Stranger Things', 'Science fiction horror mystery', 2016),
+(4, 'The Crown', 'Historical drama about the reign of Queen Elizabeth II', 2016),
+(5, 'The Mandalorian', 'Space Western set in the Star Wars universe', 2019);
+
+-- Insert into VIEWERS table
+INSERT INTO VIEWERS VALUES
+(1, 'Alice', 'JOHNSON', 'alice.johnson@email.com', '123-456-7890', 'F', str_to_date('05-APR-1992', '%d-%b-%Y'), 'New York', 'USA', '123 Main St'),
+(2, 'Bob', 'SMITH', 'bob.smith@email.com', '987-654-3210', 'M', str_to_date('20-MAY-1980', '%d-%b-%Y'), 'London', 'UK', '456 Oak St'),
+(3, 'Eva', 'GARCIA', 'eva.garcia@email.com', '555-123-4567', 'F', str_to_date('15-JUL-1989', '%d-%b-%Y'), 'Barcelona', 'Spain', '789 Pine St'),
+(4, 'Alex', 'KIM', 'alex.kim@email.com', '111-222-3333', 'M', str_to_date('12-SEP-1994', '%d-%b-%Y'), 'Seoul', 'South Korea', '987 Maple St'),
+(5, 'Sophia', 'MÜLLER', 'sophia.muller@email.com', '333-444-5555', 'F', str_to_date('25-FEB-198', '%d-%b-%Y'), 'Munich', 'Germany', '654 Birch St');
+
+
+-- Method 2: With column list
+-- Insert into EPISODES table
+INSERT INTO EPISODES (EPISODE_ID, SERIES_ID, TITLE, SEASON_NUMERIC, LENGTH_IN_SECONDS)
+VALUES
+(1, 1, 'Pilot', 1, 3600),
+(2, 1, 'Crazy Handful of Nothin', 1, 3000),
+(3, 2, 'Winter is Coming', 1, 3500),
+(4, 2, 'Battle of the Bastards', 6, 4000),
+(5, 3, 'Chapter One: The Vanishing of Will Byers', 1, 2900);
+
+-- Insert into CASTING table
+INSERT INTO CASTING (CASTING_ID, ACTOR_ID, SERIES_ID, ROLE)
+VALUES
+(1, 1, 1, 'Walter White'),
+(2, 2, 1, 'Jesse Pinkman'),
+(3, 3, 2, 'Jon Snow'),
+(4, 4, 2, 'Daenerys Targaryen'),
+(5, 5, 3, 'Eleven');
+
+-- Insert into VIEWERSHIP table
+INSERT INTO VIEWERSHIP (VIEWERSHIP_ID, VIEWER_ID, EPISODE_ID, WATCH_DATE)
+VALUES
+(1, 1, 1, '2022-01-10'),
+(2, 2, 1, '2022-01-15'),
+(3, 3, 2, '2022-01-20'),
+(4, 4, 2, '2022-01-25'),
+(5, 5, 3, '2022-02-01');
