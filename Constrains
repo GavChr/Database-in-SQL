@@ -1,0 +1,19 @@
+-- Use the Database
+USE TV_Series;
+
+-- Actors Table
+ALTER TABLE actors
+ADD CONSTRAINT CK_a_gender CHECK (a_gender IN ('M', 'F', 'O')),-- 'M' for Male, 'F' for Female, 'O' for Other
+ADD CONSTRAINT CHK_a_city_upper CHECK (UPPER(a_city) = a_city),
+ADD CONSTRAINT CHK_a_country_upper CHECK (UPPER(a_country) = a_country),
+ADD CONSTRAINT CHK_a_firstname_not_null CHECK (a_firstname IS NOT NULL),
+-- ADD CONSTRAINT CHK_a_firstname_upper CHECK (UPPER(a_firstname) = a_lastname),
+ADD CONSTRAINT CHK_a_lastname_upper CHECK (UPPER(a_lastname) = a_lastname),
+ADD CONSTRAINT uq_a_email UNIQUE (a_email);
+
+-- Viewers Table
+ALTER TABLE viewers
+ADD CONSTRAINT CK_v_gender CHECK (v_gender IN ('M', 'F', 'O')),
+ADD CONSTRAINT CHK_v_firstname_not_null CHECK (v_firstname IS NOT NULL),
+ADD CONSTRAINT CHK_v_lastname_upper CHECK (UPPER(v_lastname) = v_lastname),
+ADD CONSTRAINT uq_v_email UNIQUE (v_email);
