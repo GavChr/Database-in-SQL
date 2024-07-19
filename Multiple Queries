@@ -1,0 +1,161 @@
+-- Use the Database
+USE TV_Series;
+
+-- 1. Show the actors that their surname starts with C and ends with E.
+SELECT actor_id, a_firstname, a_lastname
+FROM actors
+WHERE UPPER(a_lastname) LIKE 'C%E';
+
+-- 2. Show the total number of viewers per country.
+SELECT v_country, COUNT(*) AS total_viewers
+FROM viewers
+GROUP BY v_country;
+
+-- 3. Which episode was the most popular (was viewed the most times)?
+SELECT episode_id, COUNT(*) AS total_views
+FROM viewership
+GROUP BY episode_id
+ORDER BY total_views DESC
+LIMIT 1;
+
+-- 4. Which series was the most popular (was viewed the most times)?
+SELECT s.series_id, s.title, COUNT(*) AS total_views
+FROM viewership v
+JOIN episodes e ON v.episode_id = e.episode_id
+JOIN series s ON e.series_id = s.series_id
+GROUP BY s.series_id, s.title
+ORDER BY total_views DESC
+LIMIT 1;
+
+-- 5. Show the actors (surname and name and ID) in ascending order and the Series they participated.
+SELECT a.actor_id, a.a_firstname, a.a_lastname, s.title AS series_participated
+FROM actors a
+LEFT JOIN casting c ON a.actor_id = c.actor_id
+LEFT JOIN series s ON c.series_id = s.series_id
+ORDER BY a.a_lastname, a.a_firstname, a.actor_id;
+
+-- 6. Which actor (surname and name and ID) has participated in the most series?
+SELECT a.actor_id, a.a_firstname, a.a_lastname, COUNT(c.series_id) AS series_count
+FROM actors a
+JOIN casting c ON a.actor_id = c.actor_id
+GROUP BY a.actor_id, a.a_firstname, a.a_lastname
+ORDER BY series_count DESC
+LIMIT 1;
+
+-- 7. Which actor (surname and name and ID) has participated in the most episodes?
+SELECT a.actor_id, a.a_firstname, a.a_lastname, COUNT(v.episode_id) AS episodes_count
+FROM actors a
+JOIN casting c ON a.actor_id = c.actor_id
+JOIN episodes e ON c.series_id = e.series_id
+JOIN viewership v ON e.episode_id = v.episode_id
+GROUP BY a.actor_id, a.a_firstname, a.a_lastname
+ORDER BY episodes_count DESC
+LIMIT 1;
+
+-- 8. Which series (title) has the most seasons?
+SELECT title
+FROM series
+ORDER BY seasons DESC
+LIMIT 1;
+
+-- 9. Which series (title) has the most episodes in total?
+SELECT s.title
+FROM series s
+JOIN episodes e ON s.series_id = e.series_id
+GROUP BY s.title
+ORDER BY SUM(e.length_in_seconds) DESC
+LIMIT 1;
+
+-- 10. How many series were produced between 2000 and 2009?
+SELECT COUNT(*) AS total_series
+FROM series
+WHERE year_started BETWEEN 2000 AND 2009;
+
+-- 11. Show the actors that were born in July (regardless of the year).
+SELECT actor_id, a_firstname, a_lastname, DateOfBirth
+FROM actors
+WHERE EXTRACT(MONTH FROM DateOfBirth) = 7;
+
+-- 12. How many actors that haven’t participated in a series exist in the database?
+SELECT COUNT(*) AS actors_without_series
+FROM actors a
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM casting c
+    WHERE c.actor_id = a.actor_id
+);
+
+-- 13. Show the oldest female viewer.
+SELECT viewer_id, v_firstname, v_lastname, v_dob
+FROM viewers
+WHERE v_gender = 'F'
+ORDER BY v_dob ASC
+LIMIT 1;
+
+-- 14. Which viewers live in an address that the street has the word “SAINT” in it?
+SELECT *
+FROM viewers
+WHERE UPPER(viewer_address) LIKE '%SAINT%';
+
+-- 15. Show the series in descending order based on the average of their episodes' length.
+SELECT s.title, AVG(e.length_in_seconds) AS avg_length
+FROM series s
+JOIN episodes e ON s.series_id = e.series_id
+GROUP BY s.title
+ORDER BY avg_length DESC;
+
+-- 16. Which viewer has watched the most episodes?
+SELECT v.viewer_id, v.v_firstname, v.v_lastname, COUNT(vs.episode_id) AS total_episodes_watched
+FROM viewers v
+JOIN viewership vs ON v.viewer_id = vs.viewer_id
+GROUP BY v.viewer_id, v.v_firstname, v.v_lastname
+ORDER BY total_episodes_watched DESC
+LIMIT 1;
+
+-- 17. Which viewer in “THESSALONIKI” has watched the most episodes?
+SELECT v.viewer_id, v.v_firstname, v.v_lastname, COUNT(vs.episode_id) AS total_episodes_watched
+FROM viewers v
+JOIN viewership vs ON v.viewer_id = vs.viewer_id
+WHERE UPPER(v.v_city) = 'THESSALONIKI'
+GROUP BY v.viewer_id, v.v_firstname, v.v_lastname
+ORDER BY total_episodes_watched DESC
+LIMIT 1;
+
+-- 18. Show the most popular series (the series that its episodes were watched the most times) per gender.
+WITH RankedSeries AS (
+    SELECT
+        s.series_id,
+        s.title,
+        v.v_gender,
+        ROW_NUMBER() OVER (PARTITION BY v.v_gender ORDER BY COUNT(vs.episode_id) DESC) AS rnk
+    FROM
+        series s
+        JOIN episodes e ON s.series_id = e.series_id
+        JOIN viewership vs ON e.episode_id = vs.episode_id
+        JOIN viewers v ON vs.viewer_id = v.viewer_id
+    GROUP BY
+        s.series_id,
+        s.title,
+        v.v_gender
+)
+SELECT series_id, title, v_gender
+FROM RankedSeries
+WHERE rnk = 1;
+
+-- 19. Assume a username for the viewers is made up of the first 4 letters of the first name added to the first 4 letters of the surname. Write the query to create and show the username for each viewer. Do not attempt to input it in the viewers table.
+SELECT
+    viewer_id,
+    v_firstname,
+    v_lastname,
+    LEFT(UPPER(v_firstname), 4) || LEFT(UPPER(v_lastname), 4) AS username
+FROM viewers;
+
+-- 20. Show the total length of ALL the series (total length for all episodes) per year the series were produced.
+SELECT
+    year_started,
+    SUM(e.length_in_seconds) AS total_length
+FROM
+    series s
+    JOIN episodes e ON s.series_id = e.series_id
+GROUP BY
+    year_started;
