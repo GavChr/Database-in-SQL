@@ -1,0 +1,71 @@
+-- Create Database
+CREATE DATABASE TV_Series;
+
+-- Use the Database
+USE TV_Series;
+
+-- Actors Table
+CREATE TABLE actors (
+    actor_id INT PRIMARY KEY AUTO_INCREMENT,
+    a_firstname VARCHAR(30),
+    a_lastname VARCHAR(30),
+    a_gender CHAR(1),
+    a_email VARCHAR(100) DEFAULT NULL,
+    a_city VARCHAR(30) DEFAULT 'MANCHESTER',
+    a_country VARCHAR(30), -- Assuming country is a string
+    DateOfBirth DATE DEFAULT NULL
+);
+
+-- Series Table
+CREATE TABLE series (
+    series_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(100) NOT NULL,
+    Description TEXT,
+    year_started INT DEFAULT NULL
+);
+
+-- Viewers Table
+CREATE TABLE viewers (
+    viewer_id INT PRIMARY KEY AUTO_INCREMENT,
+    v_firstname VARCHAR(30),
+    v_lastname VARCHAR(30),
+    v_email VARCHAR(100) DEFAULT NULL,
+    v_contact_number VARCHAR(20),
+    v_gender CHAR(1) DEFAULT 'F',
+    v_dob DATE DEFAULT NULL,
+    v_city VARCHAR(30),
+    v_country VARCHAR(30),
+    viewer_address VARCHAR(255)
+);
+
+-- Episodes Table
+CREATE TABLE episodes (
+    episode_id INT PRIMARY KEY AUTO_INCREMENT,
+    series_id NUMERIC(9),
+    title VARCHAR(100) NOT NULL,
+    season_numeric INT,
+    length_in_seconds INT,
+    FOREIGN KEY (series_id) REFERENCES series(series_id)
+);
+
+-- Casting Table
+CREATE TABLE casting (
+    casting_id INT PRIMARY KEY AUTO_INCREMENT,
+    actor_id NUMERIC(9),
+    series_id NUMERIC(9),
+    role VARCHAR(50),
+    CONSTRAINT UQ_casting UNIQUE (actor_id, series_id),
+    FOREIGN KEY (actor_id) REFERENCES actors(actor_id),
+    FOREIGN KEY (series_id) REFERENCES series(series_id)
+);
+
+-- Viewership Table
+CREATE TABLE viewership (
+    viewership_id INT PRIMARY KEY AUTO_INCREMENT,
+    viewer_id NUMERIC(9),
+    episode_id NUMERIC(9),
+    watch_date DATE,
+    CONSTRAINT UQ_viewership UNIQUE (viewer_id, episode_id),
+    FOREIGN KEY (viewer_id) REFERENCES viewers(viewer_id),
+    FOREIGN KEY (episode_id) REFERENCES episodes(episode_id)
+);
